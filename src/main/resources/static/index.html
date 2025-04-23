@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mock Chat</title>
+    <!-- <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script> -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/event-source-polyfill@1.0.31/src/eventsource.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200">
+                <h1 class="text-xl font-bold">Mock Chat</h1>
+                <p class="text-sm text-gray-500">AI Assistant</p>
+            </div>
+            
+            <!-- Conversation Tabs -->
+            <div class="p-3 flex space-x-2 border-b border-gray-200">
+                <button class="px-3 py-1 text-sm bg-gray-100 rounded-md font-medium flex-1 text-center active">帮助</button>
+                <button class="px-3 py-1 text-sm text-gray-500 rounded-md font-medium flex-1 text-center">设置</button>
+            </div>
+            
+            <!-- Conversation List -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="p-2">
+                    <div class="text-xs text-gray-500 px-2 py-1">CONVERSATIONS</div>
+                    
+                    <div class="conversation-item bg-gray-100 rounded-md p-2 mb-1 cursor-pointer">
+                        <div class="font-medium text-sm">默认聊天</div>
+                        <div class="text-xs text-gray-500 truncate">最近的对话内容...</div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <!-- New Chat Button -->
+            <div class="p-3 border-t border-gray-200">
+                <button id="new-chat-btn" class="w-full py-2 px-4 bg-gray-900 text-white rounded-md flex items-center justify-center">
+                    <!-- <i data-lucide="plus" class="w-4 h-4 mr-2"></i> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2 lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    <span>New Chat</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Chat Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Chat Header -->
+            <div class="py-3 px-6 border-b border-gray-200 bg-white flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-medium">默认聊天</h2>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button class="p-1 text-gray-500 hover:text-gray-700 rounded-md">
+                        <!-- <i data-lucide="settings" class="w-5 h-5"></i> -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 lucide lucide-settings-icon lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                    <button class="p-1 text-gray-500 hover:text-gray-700 rounded-md">
+                        <!-- <i data-lucide="share" class="w-5 h-5"></i> -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 lucide lucide-share-icon lucide-share"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-6">
+                <!-- System Status Message -->
+<!--                <div class="mb-6">-->
+<!--                    <div class="flex items-start">-->
+<!--                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-4">-->
+<!--                            &lt;!&ndash; <i data-lucide="bot" class="w-4 h-4 text-gray-600"></i> &ndash;&gt;-->
+<!--                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-600 lucide lucide-bot-icon lucide-bot"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>-->
+<!--                        </div>-->
+<!--                        <div class="flex-1">-->
+<!--                            <div class="font-medium mb-1">DeepSeek Chat | 深度来袭</div>-->
+<!--                            <div class="text-sm">-->
+<!--                                <p>雷猴，有什么需要帮助的吗？</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+            
+            <!-- Message Input -->
+            <div class="border-t border-gray-200 bg-white p-4">
+                <div class="relative">
+                    <textarea id="message-input" rows="3" placeholder="Type your message here..." 
+                        class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
+                    ></textarea>
+                    <div class="absolute right-2 bottom-2 flex items-center space-x-2">
+                        <button class="p-1 text-gray-400 hover:text-gray-600">
+                            <!-- <i data-lucide="paperclip" class="w-5 h-5"></i> -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 lucide lucide-paperclip-icon lucide-paperclip"><path d="M13.234 20.252 21 12.3"/><path d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"/></svg>
+                        </button>
+                        <button id="send-message-btn" class="p-1 bg-gray-900 text-white rounded-md w-8 h-8 flex items-center justify-center">
+                            <!-- <i data-lucide="send" class="w-4 h-4"></i> -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 lucide lucide-send-icon lucide-send"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                    <div>Press Enter to send, Shift+Enter for new line</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-2 right-4 text-xs text-gray-500">
+        Built for MCP.
+    </footer>
+
+    <script src="icons.js"></script>
+    <script src="script.js"></script>
+    <script>
+        window.addEventListener("wheel", (e) => {
+            const isPinching = e.ctrlKey;
+            if (isPinching) e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
